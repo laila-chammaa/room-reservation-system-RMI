@@ -27,6 +27,6 @@ public interface ServerInterface extends Remote {
     String cancelBooking(String bookingID) throws RemoteException;
 
     //Misc
-    int getLocalAvailableTimeSlot();
+    int getLocalAvailableTimeSlot() throws RemoteException;
     void getUDPData(int udpPort) throws RemoteException;
 }

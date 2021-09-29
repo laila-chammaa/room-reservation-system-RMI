@@ -23,20 +23,18 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class CampusServer implements ServerInterface {
+public class CampusServer extends UnicastRemoteObject implements ServerInterface {
     private static final long serialVersionUID = 1L;
     private static int UDPPort;
     private static final int CLIENT_NAME_INI_POS = 3;
 
     //Variables for RMI Registry
-    private static final String BANK_HOST = "localhost";
-    private static final int BANK_PORT = 1199;
+    private static final int REGISTRY_PORT = 1199;
     private Registry registry;
 
     //Variable for each separate bank server
     private CampusID campusID;
-    private HashMap<LocalDate, HashMap<Integer, Pair<Long, Long>>> hashmapDB;
-    //private Map<String, ArrayList<Client>> clientList = new HashMap<String, ArrayList<Client>>();
+    private HashMap<LocalDate, HashMap<Integer, HashMap<Pair<Long, Long>, String>>> campusDatabase = new HashMap<>();
     private Logger logger;
 
     public CampusServer(String campusID, int UDPPort) throws RemoteException, AlreadyBoundException {
@@ -45,19 +43,32 @@ public class CampusServer implements ServerInterface {
         CampusServer.UDPPort = UDPPort;
 
         initiateLogger();
-        initializeServer(UDPPort);
+        initializeServer();
 
         this.logger.info("Server: " + campusID + " initialization success.");
         this.logger.info("Server: " + campusID + " port is : " + UDPPort);
     }
 
-    private void initializeServer(int UDPPort) throws RemoteException, AlreadyBoundException {
+    private void initializeServer() throws RemoteException, AlreadyBoundException {
         this.logger.info("Initializing Server ...");
         // Bind the local server to the RMI Registry
-        registry = LocateRegistry.createRegistry(UDPPort);
+        startRegistry();
+
         // TODO: remove this line?
-        ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, UDPPort);
-        registry.bind(this.campusID.toString(), stub);
+        //ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, UDPPort);
+        registry.bind(this.campusID.toString(), this);
+    }
+
+    // This method starts a RMI registry on the local host, if it
+    // does not already exists at the specified port number.
+    private void startRegistry() throws RemoteException {
+        try {
+            registry = LocateRegistry.getRegistry(CampusServer.REGISTRY_PORT);
+            registry.list();
+        } catch (RemoteException e) {
+            registry = LocateRegistry.createRegistry(CampusServer.REGISTRY_PORT);
+            this.logger.info("RMI registry created at port " + CampusServer.REGISTRY_PORT);
+        }
     }
 
     private void initiateLogger() {
@@ -88,11 +99,21 @@ public class CampusServer implements ServerInterface {
         this.logger = logger;
     }
 
+    /* If room_Number already exists in the database, it
+just adds the new time slots. If a time slot does not exist in the database, then add it.
+Log the information into the admin log file.*/
+
     @Override
     public String createRoom(int roomNumber, LocalDate date, ArrayList<Pair<Long, Long>> listOfTimeSlots) throws RemoteException {
+        this.logger.info("Attempting to create a room record. User");
         RoomRecord roomRecord = new RoomRecord(roomNumber, date, listOfTimeSlots);
         //CHECK IF ITS AN ADMIN
+        //validateAdmin(userID);
+        //campusDatabase.put(date, )
         return "wow";
+    }
+
+    private void validateAdmin(int userID) {
     }
 
     @Override
@@ -177,29 +198,24 @@ public class CampusServer implements ServerInterface {
     }
 
     @Override
-    public int getLocalAvailableTimeSlot() {
+    public int getLocalAvailableTimeSlot() throws RemoteException {
         return 0;
     }
 
-    @Override
     //This will create data-gram socket to connect to other servers.
     //Necessary in order to give total account count to other servers.
+    @Override
     public synchronized void getUDPData(int portNum) throws RemoteException {
-        DatagramSocket dataSocket;
+        DatagramSocket socket;
 
         try {
-            dataSocket = new DatagramSocket();
-
             byte[] message = ByteBuffer.allocate(4).putInt(getLocalAvailableTimeSlot()).array();
-
-            //Acquire local host
             InetAddress hostAddress = InetAddress.getByName("localhost");
-
-            DatagramPacket request = new DatagramPacket(message, message.length, hostAddress, portNum);
-            dataSocket.send(request);
-
-            dataSocket.close();
-        } catch (Exception e) {
+            DatagramPacket packet = new DatagramPacket(message, message.length, hostAddress, portNum);
+            socket = new DatagramSocket(CampusServer.UDPPort);
+            socket.send(packet);
+            socket.close();
+        } catch (IOException e) {
             this.logger.severe("Server Log: | getUDPData Error: " + e.getMessage());
             throw new RemoteException(e.getMessage());
         }

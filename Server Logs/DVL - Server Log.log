@@ -1,6 +1,8 @@
-Sep 29, 2021 11:41:11 AM server.CampusServer initializeServer
+Sep 29, 2021 2:18:01 PM server.CampusServer initializeServer
 INFO: Initializing Server ...
-Sep 29, 2021 11:41:11 AM server.CampusServer <init>
+Sep 29, 2021 2:18:01 PM server.CampusServer startRegistry
+INFO: RMI registry created at port 1199
+Sep 29, 2021 2:18:01 PM server.CampusServer <init>
 INFO: Server: DVL initialization success.
-Sep 29, 2021 11:41:11 AM server.CampusServer <init>
+Sep 29, 2021 2:18:01 PM server.CampusServer <init>
 INFO: Server: DVL port is : 8081

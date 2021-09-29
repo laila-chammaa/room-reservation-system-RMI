@@ -20,7 +20,7 @@ public class StudentDriver {
         String customer1 = "BCCA1234";
 
         try {
-            StudentClient testClient1 = new StudentClient(customer1, DVL);
+            StudentClient testClient1 = new StudentClient(customer1);
             Pair<Long, Long> timeSlot = new Pair<>(19L, 20L);
             testClient1.bookRoom(KKL, 201,LocalDate.now(), timeSlot);
         } catch (RemoteException | NotBoundException e) {

@@ -14,26 +14,38 @@ import java.util.ArrayList;
 public class AdminClient {
 
     //RMI Variables
-    private static final String BANK_HOST = "localhost";
-    private static final int BANK_PORT = 1099; //change to 8080?
-    private Registry registry = null;
-    private String customerID;
+    private static final String CAMPUS_HOST = "localhost";
+    private static final int CAMPUS_PORT = 1199; //change to 8080?
+    private Registry registry;
+    private String adminID;
     private CampusID campusID;
 
-    private static final int ACCOUNT_TYPE_POS = 2;
+    private static final int USER_TYPE_POS = 3;
+    private static final int CAMPUS_NAME_POS = 3;
 
-    public AdminClient(String customerID, CampusID campusID) throws RemoteException, NotBoundException {
-        char accountType = customerID.charAt(ACCOUNT_TYPE_POS);
-        if (accountType != 'M') {
-            throw new RemoteException("Login Error: This client is for managers only.");
+    public AdminClient(String userID) throws RemoteException, NotBoundException {
+        validateAdmin(userID);
+
+        registry = LocateRegistry.getRegistry(CAMPUS_HOST, CAMPUS_PORT);
+
+        System.out.println("Login Sucessed. | Admin ID: " +
+                this.adminID + " | Campus ID: " + this.campusID.toString());
+    }
+
+    private void validateAdmin(String userID) throws RemoteException {
+        char userType = userID.charAt(USER_TYPE_POS);
+        String campusName = userID.substring(0, CAMPUS_NAME_POS);
+
+        if (userType != 'A') {
+            throw new RemoteException("Login Error: This client is for admins only.");
         }
+        this.adminID = userID;
 
-        this.customerID = customerID;
-        this.campusID = campusID;
-        registry = LocateRegistry.getRegistry(BANK_HOST, BANK_PORT);
-
-        System.out.println("Login Sucessed. | Customer ID: " +
-                this.customerID + " | Campus ID: " + this.campusID.toString());
+        try {
+            this.campusID = CampusID.valueOf(campusName);
+        } catch (Exception e) {
+            throw new RemoteException("Login Error: Invalid ID.");
+        }
     }
 
     public synchronized void createRoomRecord(int roomNumber, LocalDate date,
