@@ -1,6 +1,6 @@
 package model;
 
-public enum Campus {
+public enum CampusID {
     DVL,
     KKL,
     WST
