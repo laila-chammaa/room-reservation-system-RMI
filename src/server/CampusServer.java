@@ -5,7 +5,13 @@ import model.CampusID;
 import model.RoomRecord;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -103,11 +109,100 @@ public class CampusServer implements ServerInterface {
 
     @Override
     public HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {
-        return null;
+        HashMap<CampusID, Integer> totalTimeSlotCount = new HashMap<>();
+        int localTimeSlotCount = getLocalAvailableTimeSlot();
+        totalTimeSlotCount.put(this.campusID, localTimeSlotCount);
+
+        DatagramSocket socket;
+
+        //1. Create UDP Socket
+        try {
+            socket = new DatagramSocket(CampusServer.UDPPort);
+
+            String[] campusServers = registry.list();
+
+            //2. Get RMI Registry List of other servers.
+            for (String campusServer : campusServers) {
+                if (campusServer.equals(this.campusID.toString())) {
+                    continue;
+                }
+
+                ServerInterface otherServer;
+                try {
+                    otherServer = (ServerInterface) registry.lookup(campusServer);
+                } catch (NotBoundException e) {
+                    this.logger.severe("Server Log: | getAvailableTimeSlot() Error: " + campusServer + " Not Bound.");
+                    throw new RemoteException(e.getMessage());
+                }
+
+                //3. For each server we will ask for their local total count.
+                boolean recv = false;
+                int rData = 0; //TODO: might not be right
+
+                while (!recv) {
+                    otherServer.getUDPData(CampusServer.UDPPort);
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+
+                    try {
+                        socket.receive(request);
+                    } catch (IOException e) {
+                        this.logger.severe("Server Log: | getAvailableTimeSlot() Error: IO Exception at receiving reply.");
+                        throw new RemoteException(e.getMessage());
+                    }
+
+                    rData = Integer.parseInt(new String(request.getData()));
+
+                    if (request.getPort() > 9000) {
+                        recv = true;
+                    }
+                }
+
+                totalTimeSlotCount.put(CampusID.valueOf(campusServer), rData);
+            }
+
+            socket.close();
+        } catch (SocketException e) {
+            this.logger.severe("Server Log: | getAvailableTimeSlot() Error | " + e.getMessage());
+            throw new RemoteException(e.getMessage());
+        }
+
+        return totalTimeSlotCount;
+
     }
 
     @Override
     public String cancelBooking(String bookingID) throws RemoteException {
         return "wowww";
     }
+
+    @Override
+    public int getLocalAvailableTimeSlot() {
+        return 0;
+    }
+
+    @Override
+    //This will create data-gram socket to connect to other servers.
+    //Necessary in order to give total account count to other servers.
+    public synchronized void getUDPData(int portNum) throws RemoteException {
+        DatagramSocket dataSocket;
+
+        try {
+            dataSocket = new DatagramSocket();
+
+            byte[] message = ByteBuffer.allocate(4).putInt(getLocalAvailableTimeSlot()).array();
+
+            //Acquire local host
+            InetAddress hostAddress = InetAddress.getByName("localhost");
+
+            DatagramPacket request = new DatagramPacket(message, message.length, hostAddress, portNum);
+            dataSocket.send(request);
+
+            dataSocket.close();
+        } catch (Exception e) {
+            this.logger.severe("Server Log: | getUDPData Error: " + e.getMessage());
+            throw new RemoteException(e.getMessage());
+        }
+    }
+
 }
