@@ -24,7 +24,7 @@ public class CampusServer implements ServerInterface {
 
     //Variables for RMI Registry
     private static final String BANK_HOST = "localhost";
-    private static final int BANK_PORT = 1099;
+    private static final int BANK_PORT = 1199;
     private Registry registry;
 
     //Variable for each separate bank server
@@ -38,23 +38,23 @@ public class CampusServer implements ServerInterface {
         this.campusID = CampusID.valueOf(campusID);
         CampusServer.UDPPort = UDPPort;
 
-        // Logging Initiation
-        this.logger = this.initiateLogger();
+        initiateLogger();
+        initializeServer(UDPPort);
+
+        this.logger.info("Server: " + campusID + " initialization success.");
+        this.logger.info("Server: " + campusID + " port is : " + UDPPort);
+    }
+
+    private void initializeServer(int UDPPort) throws RemoteException, AlreadyBoundException {
         this.logger.info("Initializing Server ...");
-
-        //serverInitialization();
-
         // Bind the local server to the RMI Registry
         registry = LocateRegistry.createRegistry(UDPPort);
         // TODO: remove this line?
         ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, UDPPort);
         registry.bind(this.campusID.toString(), stub);
-
-        System.out.println("Server: " + campusID + " initialization success.");
-        System.out.println("Server: " + campusID + " port is : " + UDPPort);
     }
 
-    private Logger initiateLogger() {
+    private void initiateLogger() {
         Logger logger = Logger.getLogger("Server Logs/" + this.campusID + "- Server Log");
         FileHandler fh;
 
@@ -63,7 +63,7 @@ public class CampusServer implements ServerInterface {
             fh = new FileHandler("Server Logs/" + this.campusID + " - Server Log.log");
 
             //Disable console handling
-            logger.setUseParentHandlers(false);
+            //logger.setUseParentHandlers(false);
             logger.addHandler(fh);
 
             //Formatting configuration
@@ -79,7 +79,7 @@ public class CampusServer implements ServerInterface {
 
         System.out.println("Server Log: Logger initialization success.");
 
-        return logger;
+        this.logger = logger;
     }
 
     @Override

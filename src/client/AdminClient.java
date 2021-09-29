@@ -33,21 +33,20 @@ public class AdminClient {
         registry = LocateRegistry.getRegistry(BANK_HOST, BANK_PORT);
 
         System.out.println("Login Sucessed. | Customer ID: " +
-                this.customerID + " | Branch ID: " + this.campusID.toString());
+                this.customerID + " | Campus ID: " + this.campusID.toString());
     }
 
     public synchronized void createRoomRecord(int roomNumber, LocalDate date,
-                                              ArrayList<Pair<Long, Long>> listOfTimeSlots, String customerID,
-                                              CampusID campusID) {
+                                              ArrayList<Pair<Long, Long>> listOfTimeSlots, String roomID) {
 
         try {
             ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
             String result = server.createRoom(roomNumber, date, listOfTimeSlots);
 
             if (result != null) {
-                System.out.println("Account Successfully Created. | Customer ID: " + customerID);
+                System.out.println("Room Successfully Created. | Room ID: " + roomID);
             } else {
-                System.out.println("Account Creation Error: Account Unable to Create. Please consult server log.");
+                System.out.println("Room Creation Error: Room Unable to Create. Please consult server log.");
             }
 
         } catch (Exception e) {

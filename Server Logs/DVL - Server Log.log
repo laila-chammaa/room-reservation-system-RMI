@@ -1,0 +1,6 @@
+Sep 29, 2021 11:41:11 AM server.CampusServer initializeServer
+INFO: Initializing Server ...
+Sep 29, 2021 11:41:11 AM server.CampusServer <init>
+INFO: Server: DVL initialization success.
+Sep 29, 2021 11:41:11 AM server.CampusServer <init>
+INFO: Server: DVL port is : 8081

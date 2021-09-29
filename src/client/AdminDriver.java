@@ -20,7 +20,7 @@ public class AdminDriver {
 
 
             AdminClient testClient1 = new AdminClient(testAdmin1, campus1);
-            testClient1.createRoomRecord(201, LocalDate.now(), listOfTimeSlots, cid1, campus1);
+            testClient1.createRoomRecord(201, LocalDate.now(), listOfTimeSlots, cid1);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

@@ -4,7 +4,6 @@ import com.sun.tools.javac.util.Pair;
 import model.CampusID;
 import server.ServerInterface;
 
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,14 +19,14 @@ public class StudentClient {
     private String customerID;
     private CampusID campusID;
 
-    public StudentClient(String customerID, CampusID branchID) throws RemoteException, NotBoundException {
+    public StudentClient(String customerID, CampusID campusID) throws RemoteException, NotBoundException {
         this.customerID = customerID;
-        this.campusID = branchID;
+        this.campusID = campusID;
 
         registry = LocateRegistry.getRegistry(BANK_HOST, BANK_PORT);
 
         System.out.println("Login Sucessed. | Customer ID: " +
-                this.customerID + " | Branch ID: " + this.campusID.toString());
+                this.customerID + " | Campus ID: " + this.campusID.toString());
     }
 
     public synchronized void bookRoom(CampusID campusID, int roomNumber, LocalDate date,
