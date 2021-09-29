@@ -9,6 +9,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
+import java.util.logging.Logger;
+
+import static client.ClientLogUtil.initiateLogger;
 
 public class StudentClient {
 
@@ -18,27 +21,31 @@ public class StudentClient {
     private Registry registry;
     private String studentID;
     private CampusID campusID;
+    private Logger logger;
 
-    private static final int USER_TYPE_POS = 3;
-    private static final int CAMPUS_NAME_POS = 3;
+    static final int USER_TYPE_POS = 3;
 
-    public StudentClient(String userID) throws RemoteException, NotBoundException {
-        this.studentID = userID;
-
+    public StudentClient(String userID) throws RemoteException {
         validateStudent(userID);
+
+        try {
+            initiateLogger(campusID, userID);
+        } catch (Exception e) {
+            throw new RemoteException("Login Error: Invalid ID.");
+        }
 
         registry = LocateRegistry.getRegistry(CAMPUS_HOST, CAMPUS_PORT);
 
-        System.out.println("Login Sucessed. | Student ID: " +
+        System.out.println("Login Succeeded. | Student ID: " +
                 this.studentID + " | Campus ID: " + this.campusID.toString());
     }
 
     private void validateStudent(String userID) throws RemoteException {
         char userType = userID.charAt(USER_TYPE_POS);
-        String campusName = userID.substring(0, CAMPUS_NAME_POS);
+        String campusName = userID.substring(0, USER_TYPE_POS);
 
-        if (userType != 'A') {
-            throw new RemoteException("Login Error: This client is for admins only.");
+        if (userType != 'S') {
+            throw new RemoteException("Login Error: This client is for students only.");
         }
         this.studentID = userID;
 

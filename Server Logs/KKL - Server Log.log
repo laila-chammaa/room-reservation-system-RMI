@@ -1,6 +1,6 @@
-Sep 29, 2021 2:18:01 PM server.CampusServer initializeServer
+Sep 29, 2021 7:04:13 PM server.CampusServer initializeServer
 INFO: Initializing Server ...
-Sep 29, 2021 2:18:01 PM server.CampusServer <init>
+Sep 29, 2021 7:04:13 PM server.CampusServer <init>
 INFO: Server: KKL initialization success.
-Sep 29, 2021 2:18:01 PM server.CampusServer <init>
+Sep 29, 2021 7:04:13 PM server.CampusServer <init>
 INFO: Server: KKL port is : 8082

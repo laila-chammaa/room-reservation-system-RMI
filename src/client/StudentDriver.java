@@ -18,10 +18,10 @@ public class StudentDriver {
 
     public static void main(String[] args) {
         String customer1 = "BCCA1234";
+        Pair<Long, Long> timeSlot = new Pair<>(19L, 20L);
 
         try {
             StudentClient testClient1 = new StudentClient(customer1);
-            Pair<Long, Long> timeSlot = new Pair<>(19L, 20L);
             testClient1.bookRoom(KKL, 201,LocalDate.now(), timeSlot);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
