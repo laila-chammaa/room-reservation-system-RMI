@@ -1,12 +1,8 @@
-Sep 29, 2021 7:04:13 PM server.CampusServer initializeServer
+Sep 29, 2021 7:20:51 PM server.CampusServer initializeServer
 INFO: Initializing Server ...
-Sep 29, 2021 7:04:13 PM server.CampusServer startRegistry
+Sep 29, 2021 7:20:51 PM server.CampusServer startRegistry
 INFO: RMI registry created at port 1199
-Sep 29, 2021 7:04:13 PM server.CampusServer <init>
+Sep 29, 2021 7:20:51 PM server.CampusServer <init>
 INFO: Server: DVL initialization success.
-Sep 29, 2021 7:04:13 PM server.CampusServer <init>
+Sep 29, 2021 7:20:51 PM server.CampusServer <init>
 INFO: Server: DVL port is : 8081
-Sep 29, 2021 7:06:15 PM server.CampusServer createRoom
-INFO: Attempting to create a room record. User
-Sep 29, 2021 7:06:55 PM server.CampusServer createRoom
-INFO: Attempting to create a room record. User

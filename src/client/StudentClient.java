@@ -1,6 +1,5 @@
 package client;
 
-import com.sun.tools.javac.util.Pair;
 import model.CampusID;
 import server.ServerInterface;
 
@@ -9,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static client.ClientLogUtil.initiateLogger;
@@ -29,7 +29,7 @@ public class StudentClient {
         validateStudent(userID);
 
         try {
-            initiateLogger(campusID, userID);
+            this.logger = initiateLogger(campusID, userID);
         } catch (Exception e) {
             throw new RemoteException("Login Error: Invalid ID.");
         }
@@ -57,10 +57,15 @@ public class StudentClient {
     }
 
     public synchronized void bookRoom(CampusID campusID, int roomNumber, LocalDate date,
-                                      Pair<Long, Long> timeSlot)
+                                      Map.Entry<Long, Long> timeSlot)
             throws RemoteException, NotBoundException {
-        //TODO: maybe authentication right here? and on the server's side
         ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
-        server.bookRoom(campusID, roomNumber, date, timeSlot);
+        server.bookRoom(studentID, campusID, roomNumber, date, timeSlot);
     }
+
+    public synchronized void cancelBooking(String bookingID) throws RemoteException, NotBoundException {
+        ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
+        server.cancelBooking(studentID, bookingID);
+    }
+
 }

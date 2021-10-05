@@ -1,8 +1,7 @@
 package server;
 
-import com.sun.tools.javac.util.Pair;
+import model.Booking;
 import model.CampusID;
-import model.RoomRecord;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,16 +16,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
 
 public class CampusServer extends UnicastRemoteObject implements ServerInterface {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_NUM_BOOKING = 3;
     private static int UDPPort;
-    private static final int CLIENT_NAME_INI_POS = 3;
 
     //Variables for RMI Registry
     private static final int REGISTRY_PORT = 1199;
@@ -34,13 +34,25 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
 
     //Variable for each separate bank server
     private CampusID campusID;
-    private HashMap<LocalDate, HashMap<Integer, HashMap<Pair<Long, Long>, String>>> campusDatabase = new HashMap<>();
+
+    private static ArrayList<HashMap<String, Integer>> stuBkngCntMap;
+
+    private HashMap<String, Map.Entry<LocalDate, Integer>> roomRecords;
+    private HashMap<String, List<Booking>> bookingRecords;
+
     private Logger logger;
 
     public CampusServer(String campusID, int UDPPort) throws RemoteException, AlreadyBoundException {
         super();
         this.campusID = CampusID.valueOf(campusID);
         CampusServer.UDPPort = UDPPort;
+
+        this.roomRecords = new HashMap<>();
+        this.bookingRecords = new HashMap<>();
+        //TODO: is this necessary?
+        stuBkngCntMap = new ArrayList<>(55);
+        for (int i = 0; i < 55; i++)
+            stuBkngCntMap.add(new HashMap<>());
 
         initiateLogger();
         initializeServer();
@@ -99,32 +111,78 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         this.logger = logger;
     }
 
-    /* If room_Number already exists in the database, it
-just adds the new time slots. If a time slot does not exist in the database, then add it.
-Log the information into the admin log file.*/
-
     @Override
-    public String createRoom(int roomNumber, LocalDate date, ArrayList<Pair<Long, Long>> listOfTimeSlots) throws RemoteException {
-        this.logger.info("Attempting to create a room record. User");
-        RoomRecord roomRecord = new RoomRecord(roomNumber, date, listOfTimeSlots);
-        //CHECK IF ITS AN ADMIN
-        //validateAdmin(userID);
-        //campusDatabase.put(date, )
+    public String createRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
+            throws RemoteException {
+        this.logger.info("Attempting to create a room record.");
+        //TODO: null checks
+        Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
+                .filter(h -> h.getValue().getKey().equals(date) && h.getValue().getValue() == roomNumber).findFirst();
+        if (record.isPresent()) {
+            String recordID = record.get().getKey();
+            List<Booking> newBookings = new ArrayList<>();
+            for (Map.Entry<Long,Long> slot : listOfTimeSlots) {
+                newBookings.add(new Booking(recordID, null, slot));
+            }
+            bookingRecords.put(recordID, newBookings);
+        } else {
+            //TODO: generate new recordID
+            String recordID = "1";
+            roomRecords.put(recordID, new AbstractMap.SimpleEntry<>(date, roomNumber));
+            List<Booking> newBookings = new ArrayList<>();
+            for (Map.Entry<Long,Long> slot : listOfTimeSlots) {
+                newBookings.add(new Booking(recordID, null, slot));
+            }
+            bookingRecords.put(recordID, newBookings);
+        }
         return "wow";
     }
 
-    private void validateAdmin(int userID) {
-    }
-
     @Override
-    public String deleteRoom(int roomNumber, LocalDate date, ArrayList<Pair<Long, Long>> listOfTimeSlots) throws RemoteException {
+    public String deleteRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
+        //TODO: null checks
+        Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
+                .filter(h -> h.getValue().getKey().equals(date) && h.getValue().getValue() == roomNumber).findFirst();
+        if (record.isPresent()) {
+            String recordID = record.get().getKey();
+            List<Booking> removedBookings = bookingRecords.get(recordID)
+                    .stream().filter(b -> listOfTimeSlots.contains(b.getTimeslot())).collect(Collectors.toList());
+            bookingRecords.get(recordID).removeIf(removedBookings::contains);
+            for (Booking removedBooking : removedBookings) {
+                if (removedBooking.getBookedBy() != null) {
+                    //booked by the student, reducing the student's bookingCount
+                    setStuBookingCnt(removedBooking.getBookedBy(), date, -1);
+                }
+            }
+        } else {
+            //log
+        }
         return null;
     }
 
     @Override
-    public String bookRoom(CampusID campusID, int roomNumber, LocalDate date, Pair<Long, Long> timeslot)
+    public String bookRoom(String studentID, CampusID campusID, int roomNumber, LocalDate date, Map.Entry<Long, Long> timeslot)
             throws RemoteException {
-        //TODO: validate timeslot
+        //TODO: use campusID passed to book a room in another server?
+        //TODO: null check
+        if (getStuBookingCnt(studentID, date) >= MAX_NUM_BOOKING) {
+            //TODO: not allowed any more, log
+        }
+        Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
+                .filter(h -> h.getValue().getKey().equals(date) && h.getValue().getValue() == roomNumber).findFirst();
+        if (record.isPresent()) {
+            String recordID = record.get().getKey();
+            Optional<Booking> booking = bookingRecords.get(recordID)
+                    .stream().filter(b -> b.getTimeslot().equals(timeslot)).findFirst();
+            if (booking.isPresent()) {
+                booking.get().setBookedBy(studentID);
+                //TODO: set bookingID?
+                setStuBookingCnt(studentID, date, 1);
+            } else {
+                //log
+            }
+
+        }
         return null;
     }
 
@@ -189,17 +247,27 @@ Log the information into the admin log file.*/
         }
 
         return totalTimeSlotCount;
-
     }
 
     @Override
-    public String cancelBooking(String bookingID) throws RemoteException {
-        return "wowww";
+    public String cancelBooking(String studentID, String bookingID) throws RemoteException {
+        List<Booking> bookingList = bookingRecords.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        Optional<Booking> booking = bookingList.stream().filter(b -> b.getBookingID().equals(bookingID)).findFirst();
+        if (booking.isPresent()) {
+            booking.get().setBookedBy(null);
+            booking.get().setBookingID(null);
+
+        } else {
+            //not found, log
+        }
+        return null;
     }
 
     @Override
     public int getLocalAvailableTimeSlot() throws RemoteException {
-        return 0;
+        List<Booking> bookingList = bookingRecords.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        List<Booking> nullBookings = bookingList.stream().filter(b -> b.getBookedBy() == null).collect(Collectors.toList());
+        return nullBookings.size();
     }
 
     //This will create data-gram socket to connect to other servers.
@@ -207,7 +275,6 @@ Log the information into the admin log file.*/
     @Override
     public synchronized void getUDPData(int portNum) throws RemoteException {
         DatagramSocket socket;
-
         try {
             byte[] message = ByteBuffer.allocate(4).putInt(getLocalAvailableTimeSlot()).array();
             InetAddress hostAddress = InetAddress.getByName("localhost");
@@ -221,4 +288,34 @@ Log the information into the admin log file.*/
         }
     }
 
+    public int getStuBookingCnt(String studentID, LocalDate localDate) {
+        Calendar cal = Calendar.getInstance();
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+        cal.setTime(date);
+        int week = cal.get(Calendar.WEEK_OF_YEAR);
+
+        HashMap<String, Integer> stuMap = stuBkngCntMap.get(week);
+        Integer cnt = stuMap.get(studentID);
+        if (cnt == null)
+            return 0;
+        else
+            return cnt;
+    }
+
+    public void setStuBookingCnt(String studentID, LocalDate localDate, int offset) {
+        Calendar cal = Calendar.getInstance();
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+        cal.setTime(date);
+        int week = cal.get(Calendar.WEEK_OF_YEAR);
+
+        HashMap<String, Integer> stuMap = stuBkngCntMap.get(week);
+        Integer cnt = stuMap.get(studentID);
+        if (offset > 0) {
+            stuMap.put(studentID, ++cnt);
+        } else {
+            stuMap.put(studentID, --cnt);
+        }
+    }
 }

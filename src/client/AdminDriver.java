@@ -1,14 +1,13 @@
 package client;
 
-import com.sun.tools.javac.util.Pair;
-
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class AdminDriver {
     public static void main(String[] args) {
-        ArrayList<Pair<Long, Long>> listOfTimeSlots = new ArrayList<>();
+        ArrayList<Map.Entry<Long, Long>> listOfTimeSlots = new ArrayList<>();
         String testAdmin1 = "DVLA1234";
 
         try {

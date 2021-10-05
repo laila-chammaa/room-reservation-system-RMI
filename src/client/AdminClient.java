@@ -1,6 +1,5 @@
 package client;
 
-import com.sun.tools.javac.util.Pair;
 import model.CampusID;
 import server.ServerInterface;
 
@@ -9,6 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static client.ClientLogUtil.initiateLogger;
@@ -29,7 +29,7 @@ public class AdminClient {
     public AdminClient(String userID) throws RemoteException {
         validateAdmin(userID);
         try {
-            initiateLogger(campusID, userID);
+            this.logger = initiateLogger(campusID, userID);
         } catch (Exception e) {
             throw new RemoteException("Login Error: Invalid ID.");
         }
@@ -56,22 +56,22 @@ public class AdminClient {
     }
 
     public synchronized void createRoom(int roomNumber, LocalDate date,
-                                              ArrayList<Pair<Long, Long>> listOfTimeSlots) {
+                                              ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
 
         try {
             ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
             String result = server.createRoom(roomNumber, date, listOfTimeSlots);
-            //TODO: generate roomID
-            int roomID = 1;
+            //TODO: generate recordID
+            int recordID = 1;
 
             if (result != null) {
-                System.out.println("Room Successfully Created. | Room ID: " + roomID);
+                logger.info("Room Successfully Created. | Record ID: " + recordID);
             } else {
-                System.out.println("Room Creation Error: Room Unable to Create. Please consult server log.");
+                logger.warning("Room Creation Error: Unable to Create Room. Please consult server log.");
             }
 
         } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
+            logger.warning("Client exception: " + e.toString());
             e.printStackTrace();
         }
     }
