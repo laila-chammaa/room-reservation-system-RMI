@@ -17,12 +17,13 @@ public class AdminDriver {
             AdminClient testClient2 = new AdminClient(testAdmin2);
 
             testClient1.createRoom(201, LocalDate.now(), listOfTimeSlots);
+            testClient1.createRoom(201, LocalDate.now(), listOfTimeSlots);
             testClient1.createRoom(231, LocalDate.now(), listOfTimeSlots);
             testClient2.createRoom(203, LocalDate.now(), listOfTimeSlots);
             testClient2.createRoom(211, LocalDate.now(), listOfTimeSlots);
 
         } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace(); //TODO: terrible exception system
+            e.printStackTrace();
         }
 
     }

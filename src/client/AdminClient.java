@@ -54,20 +54,15 @@ public class AdminClient {
         try {
             this.campusID = CampusID.valueOf(campusName);
         } catch (Exception e) {
-            throw new RemoteException("Login Error: Invalid ID."); //TODO: change to logs?
+            throw new RemoteException("Login Error: Invalid ID.");
         }
     }
 
     public synchronized void createRoom(int roomNumber, LocalDate date,
-                                        ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
+                                        ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
         this.logger.info(String.format("Client Log | Request: createRoom | AdminID: %s | Room number: %d | Date: %s",
                 adminID, roomNumber, date.toString()));
-        try {
-            this.logger.info(server.createRoom(adminID, roomNumber, date, listOfTimeSlots));
-        } catch (Exception e) {
-            logger.warning("Client exception: " + e.toString());
-            e.printStackTrace();
-        }
+        this.logger.info(server.createRoom(adminID, roomNumber, date, listOfTimeSlots));
     }
 
     public synchronized void deleteRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
@@ -76,5 +71,4 @@ public class AdminClient {
                 adminID, roomNumber, date.toString()));
         this.logger.info(server.deleteRoom(adminID, roomNumber, date, listOfTimeSlots));
     }
-
 }

@@ -1,16 +1,88 @@
-Oct 08, 2021 2:59:36 PM server.CampusServer initializeServer
+Oct 08, 2021 5:18:46 PM server.CampusServer initializeServer
 INFO: Initializing Server ...
-Oct 08, 2021 2:59:36 PM server.CampusServer startRegistry
+Oct 08, 2021 5:18:46 PM server.CampusServer startRegistry
 INFO: RMI registry created at port 1099
-Oct 08, 2021 2:59:36 PM server.CampusServer <init>
+Oct 08, 2021 5:18:46 PM server.CampusServer <init>
 INFO: Server: DVL initialization success.
-Oct 08, 2021 2:59:36 PM server.CampusServer <init>
+Oct 08, 2021 5:18:46 PM server.CampusServer <init>
 INFO: Server: DVL port is : 1099
-Oct 08, 2021 2:59:40 PM server.CampusServer createRoom
+Oct 08, 2021 5:18:52 PM server.CampusServer createRoom
 INFO: Server Log | Request: createRoom | AdminID: DVLA1234 | Room number: 201 | Date: 2021-10-08
-Oct 08, 2021 2:59:42 PM server.CampusServer createRoom
+Oct 08, 2021 5:18:52 PM server.CampusServer createRoom
 INFO: Server Log | Room record RR00001 was created successfully
-Oct 08, 2021 2:59:42 PM server.CampusServer createRoom
+Oct 08, 2021 5:18:52 PM server.CampusServer createRoom
 INFO: Server Log | Request: createRoom | AdminID: DVLA1234 | Room number: 231 | Date: 2021-10-08
-Oct 08, 2021 2:59:42 PM server.CampusServer createRoom
+Oct 08, 2021 5:18:52 PM server.CampusServer createRoom
 INFO: Server Log | Room record RR00002 was created successfully
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Request: createRoom | AdminID: DVLA1234 | Room number: 201 | Date: 2021-10-08
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Room record RR00001 was already created. It was updated successfully
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Request: createRoom | AdminID: DVLA1234 | Room number: 201 | Date: 2021-10-08
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Room record RR00001 was already created. It was updated successfully
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Request: createRoom | AdminID: DVLA1234 | Room number: 231 | Date: 2021-10-08
+Oct 08, 2021 5:19:25 PM server.CampusServer createRoom
+INFO: Server Log | Room record RR00002 was already created. It was updated successfully
+Oct 08, 2021 5:20:42 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:20:42 PM server.CampusServer getAvailableTimeSlot
+INFO: Server Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:21:19 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:21:19 PM server.CampusServer getAvailableTimeSlot
+INFO: Server Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:21:19 PM server.CampusServer getAvailableTimeSlot
+SEVERE: Server Log | getAvailableTimeSlot() ERROR: Address already in use (Bind failed)
+Oct 08, 2021 5:23:18 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:23:20 PM server.CampusServer getAvailableTimeSlot
+INFO: Server Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:23:20 PM server.CampusServer getAvailableTimeSlot
+SEVERE: Server Log | getAvailableTimeSlot() ERROR: Address already in use (Bind failed)
+Oct 08, 2021 5:23:20 PM server.CampusServer bookRoom
+INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:23:20 PM server.CampusServer bookRoom
+WARNING: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:23:20 PM server.CampusServer cancelBooking
+INFO: Server Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: DVLS1234
+Oct 08, 2021 5:23:20 PM server.CampusServer cancelBooking
+WARNING: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: DVLS1234
+Oct 08, 2021 5:26:35 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:26:35 PM server.CampusServer getAvailableTimeSlot
+INFO: Server Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:26:35 PM server.CampusServer getAvailableTimeSlot
+SEVERE: Server Log | getAvailableTimeSlot() ERROR: Address already in use (Bind failed)
+Oct 08, 2021 5:26:35 PM server.CampusServer bookRoom
+INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:26:35 PM server.CampusServer bookRoom
+WARNING: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:26:35 PM server.CampusServer cancelBooking
+INFO: Server Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: DVLS1234
+Oct 08, 2021 5:26:35 PM server.CampusServer cancelBooking
+WARNING: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: DVLS1234
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer getAvailableTimeSlot
+INFO: Server Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:27:10 PM server.CampusServer getAvailableTimeSlot
+SEVERE: Server Log | getAvailableTimeSlot() ERROR: Address already in use (Bind failed)
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+WARNING: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer cancelBooking
+INFO: Server Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: DVLS1234
+Oct 08, 2021 5:27:10 PM server.CampusServer cancelBooking
+WARNING: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: DVLS1234
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to KKL Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+INFO: Server Log | Forwarding Request to WST Server: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM server.CampusServer bookRoom
+WARNING: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20

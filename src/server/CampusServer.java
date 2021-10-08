@@ -29,6 +29,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     private static final int USER_TYPE_POS = 3;
     private static int UDPPort;
 
+    //TODO: delete?
     //Variables for RMI Registry
     //private static final int REGISTRY_PORT = 1199;
 //    private static int REGISTRY_PORT  = 1199;
@@ -123,13 +124,18 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     @Override
     public String createRoom(String adminID, int roomNumber, LocalDate date,
                              ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
-        validateAdmin(adminID);
-        validateTimeSlot(listOfTimeSlots);
+        String resultLog;
+        resultLog = validateAdmin(adminID);
+        if (resultLog != null) {
+            return resultLog;
+        }
+        resultLog = validateTimeSlot(listOfTimeSlots);
+        if (resultLog != null) {
+            return resultLog;
+        }
 
         this.logger.info(String.format("Server Log | Request: createRoom | AdminID: %s | Room number: %d | Date: %s",
                 adminID, roomNumber, date.toString()));
-
-        String resultLog;
 
         //TODO: null checks
         Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
@@ -166,13 +172,19 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     @Override
     public String deleteRoom(String adminID, int roomNumber, LocalDate date,
                              ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
-        validateAdmin(adminID);
-        validateTimeSlot(listOfTimeSlots);
+
+        String resultLog;
+        resultLog = validateAdmin(adminID);
+        if (resultLog != null) {
+            return resultLog;
+        }
+        resultLog = validateTimeSlot(listOfTimeSlots);
+        if (resultLog != null) {
+            return resultLog;
+        }
 
         this.logger.info(String.format("Server Log | Request: deleteRoom | AdminID: %s | Room number: %d | Date: %s",
                 adminID, roomNumber, date.toString()));
-
-        String resultLog;
 
         //TODO: null checks
         Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
@@ -201,10 +213,15 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     @Override
     public String bookRoom(String studentID, CampusID campusID, int roomNumber, LocalDate date,
                            Map.Entry<Long, Long> timeslot) throws RemoteException {
-        validateStudent(studentID);
-        validateTimeSlot(Collections.singletonList(timeslot));
-
         String resultLog;
+        resultLog = validateStudent(studentID);
+        if (resultLog != null) {
+            return resultLog;
+        }
+        resultLog = validateTimeSlot(Collections.singletonList(timeslot));
+        if (resultLog != null) {
+            return resultLog;
+        }
 
         //forward request to other server
         if (campusID != this.campusID) {
@@ -216,8 +233,9 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
                 otherServer = (ServerInterface) registry.lookup(campusID.toString());
                 return otherServer.bookRoom(studentID, campusID, roomNumber, date, timeslot);
             } catch (NotBoundException e) {
-                this.logger.severe("Server Log | Request: deleteRoom | ERROR: " + campusID.toString() + " Not Bound.");
-                throw new RemoteException(e.getMessage());
+                resultLog = "Server Log | Request: deleteRoom | ERROR: " + campusID.toString() + " Not Bound.";
+                this.logger.severe(resultLog);
+                return resultLog;
             }
         }
         this.logger.info(String.format("Server Log | Request: bookRoom | StudentID: %s | " +
@@ -259,9 +277,12 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
 
     @Override
     public String cancelBooking(String studentID, String bookingID) throws RemoteException {
-        validateStudent(studentID);
 
         String resultLog;
+        resultLog = validateStudent(studentID);
+        if (resultLog != null) {
+            return resultLog;
+        }
 
         this.logger.info(String.format("Server Log | Request: cancelBooking | StudentID: %s | " +
                 "BookingID: %s", studentID, bookingID));
@@ -280,6 +301,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         return resultLog;
     }
 
+    //TODO: fix this
     @Override
     public HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {
         this.logger.info(String.format("Server Log | Request: getAvailableTimeSlot | Date: %s", date.toString()));
@@ -410,26 +432,29 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         recordIdCount++;
     }
 
-    private void validateAdmin(String userID) throws RemoteException {
+    private String validateAdmin(String userID) throws RemoteException {
         char userType = userID.charAt(USER_TYPE_POS);
         if (userType != 'A') {
-            throw new RemoteException("Login Error: This request is for admins only.");
+            return "Login Error: This request is for admins only.";
         }
+        return null;
     }
 
-    private void validateStudent(String userID) throws RemoteException {
+    private String validateStudent(String userID) throws RemoteException {
         char userType = userID.charAt(USER_TYPE_POS);
         if (userType != 'S') {
-            throw new RemoteException("Login Error: This request is for students only.");
+            return "Login Error: This request is for students only.";
         }
+        return null;
     }
 
-    private void validateTimeSlot(List<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
+    private String validateTimeSlot(List<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
         for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
             if (slot.getKey() < 0 || slot.getKey() >= 24 || slot.getValue() < 0 ||
                     slot.getValue() >= 24 || slot.getKey() >= slot.getValue()) {
-                throw new RemoteException("Invalid timeslot format. Use the 24h clock.");
+                return "Invalid timeslot format. Use the 24h clock.";
             }
         }
+        return null;
     }
 }

@@ -1,0 +1,29 @@
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
+Oct 08, 2021 5:27:10 PM client.StudentClient getAvailableTimeSlot
+INFO: Client Log | Request: getAvailableTimeSlot | Date: 2021-10-08
+Oct 08, 2021 5:27:10 PM client.StudentClient getAvailableTimeSlot
+WARNING: RemoteException occurred in server thread; nested exception is: 
+	java.rmi.RemoteException: Address already in use (Bind failed)
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient cancelBooking
+INFO: Client Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: DVLS1234
+Oct 08, 2021 5:27:10 PM client.StudentClient cancelBooking
+INFO: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: DVLS1234
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20

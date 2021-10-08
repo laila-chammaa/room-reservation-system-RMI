@@ -1,6 +1,5 @@
 package client;
 
-import com.sun.security.ntlm.Server;
 import model.CampusID;
 import server.ServerInterface;
 
@@ -71,7 +70,12 @@ public class StudentClient {
 
     public synchronized HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {
         this.logger.info(String.format("Client Log | Request: getAvailableTimeSlot | Date: %s", date.toString()));
-        return server.getAvailableTimeSlot(date);
+        try {
+            return server.getAvailableTimeSlot(date);
+        } catch (RemoteException e) {
+            this.logger.warning(e.getMessage());
+            return new HashMap<>();
+        }
     }
 
     public synchronized void cancelBooking(String bookingID) throws RemoteException {
