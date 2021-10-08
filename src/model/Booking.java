@@ -2,7 +2,6 @@ package model;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 
 public class Booking {
@@ -16,6 +15,13 @@ public class Booking {
         this.bookedBy = bookedBy;
         this.timeslot = timeslot;
         if (bookedBy != null) {
+            this.bookingID = UUID.randomUUID().toString();
+        }
+    }
+
+    public void book(String bookedBy) {
+        if (bookedBy != null) {
+            this.bookedBy = bookedBy;
             this.bookingID = UUID.randomUUID().toString();
         }
     }

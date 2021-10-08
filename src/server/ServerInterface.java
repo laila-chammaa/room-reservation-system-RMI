@@ -12,10 +12,10 @@ import java.util.Map;
 public interface ServerInterface extends Remote {
 
     //ADMIN ONLY
-    String createRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
+    String createRoom(String adminID, int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
             throws RemoteException;
 
-    String deleteRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
+    String deleteRoom(String adminID, int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
             throws RemoteException;
 
     //STUDENT ONLY

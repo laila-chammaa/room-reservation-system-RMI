@@ -1,5 +1,6 @@
 package client;
 
+import com.sun.security.ntlm.Server;
 import model.CampusID;
 import server.ServerInterface;
 
@@ -8,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -17,15 +19,16 @@ public class StudentClient {
 
     //RMI Variables
     private static final String CAMPUS_HOST = "localhost";
-    private static final int CAMPUS_PORT = 1199;
+    private static final int CAMPUS_PORT = 1099;
     private Registry registry;
     private String studentID;
     private CampusID campusID;
     private Logger logger;
+    private ServerInterface server;
 
     static final int USER_TYPE_POS = 3;
 
-    public StudentClient(String userID) throws RemoteException {
+    public StudentClient(String userID) throws RemoteException, NotBoundException {
         validateStudent(userID);
 
         try {
@@ -35,6 +38,7 @@ public class StudentClient {
         }
 
         registry = LocateRegistry.getRegistry(CAMPUS_HOST, CAMPUS_PORT);
+        server = (ServerInterface) registry.lookup(this.campusID.toString());
 
         System.out.println("Login Succeeded. | Student ID: " +
                 this.studentID + " | Campus ID: " + this.campusID.toString());
@@ -58,14 +62,23 @@ public class StudentClient {
 
     public synchronized void bookRoom(CampusID campusID, int roomNumber, LocalDate date,
                                       Map.Entry<Long, Long> timeSlot)
-            throws RemoteException, NotBoundException {
-        ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
-        server.bookRoom(studentID, campusID, roomNumber, date, timeSlot);
+            throws RemoteException {
+
+        this.logger.info(String.format("Client Log | Request: bookRoom | StudentID: %s | " +
+                "Room number: %d | Date: %s | Timeslot: %s", studentID, roomNumber, date.toString(), timeSlot.toString()));
+        this.logger.info(server.bookRoom(studentID, campusID, roomNumber, date, timeSlot));
     }
 
-    public synchronized void cancelBooking(String bookingID) throws RemoteException, NotBoundException {
-        ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
-        server.cancelBooking(studentID, bookingID);
+    public synchronized HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {
+        this.logger.info(String.format("Client Log | Request: getAvailableTimeSlot | Date: %s", date.toString()));
+        return server.getAvailableTimeSlot(date);
+    }
+
+    public synchronized void cancelBooking(String bookingID) throws RemoteException {
+        this.logger.info(String.format("Client Log | Request: cancelBooking | StudentID: %s | " +
+                "BookingID: %s", studentID, bookingID));
+
+        this.logger.info(server.cancelBooking(studentID, bookingID));
     }
 
 }

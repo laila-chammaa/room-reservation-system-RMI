@@ -3,6 +3,7 @@ package client;
 import model.CampusID;
 import server.ServerInterface;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,16 +18,17 @@ public class AdminClient {
 
     //RMI Variables
     private static final String CAMPUS_HOST = "localhost";
-    private static final int CAMPUS_PORT = 1199; //change to 8080?
+    private static final int CAMPUS_PORT = 1099; //change to 8080?
     private Registry registry;
     private String adminID;
     private CampusID campusID;
     private Logger logger;
+    private ServerInterface server;
 
     private static final int USER_TYPE_POS = 3;
     private static final int CAMPUS_NAME_POS = 3;
 
-    public AdminClient(String userID) throws RemoteException {
+    public AdminClient(String userID) throws RemoteException, NotBoundException {
         validateAdmin(userID);
         try {
             this.logger = initiateLogger(campusID, userID);
@@ -34,6 +36,7 @@ public class AdminClient {
             throw new RemoteException("Login Error: Invalid ID.");
         }
         registry = LocateRegistry.getRegistry(CAMPUS_HOST, CAMPUS_PORT);
+        server = (ServerInterface) registry.lookup(this.campusID.toString());
 
         System.out.println("Login Succeeded. | Admin ID: " +
                 this.adminID + " | Campus ID: " + this.campusID.toString());
@@ -51,28 +54,27 @@ public class AdminClient {
         try {
             this.campusID = CampusID.valueOf(campusName);
         } catch (Exception e) {
-            throw new RemoteException("Login Error: Invalid ID.");
+            throw new RemoteException("Login Error: Invalid ID."); //TODO: change to logs?
         }
     }
 
     public synchronized void createRoom(int roomNumber, LocalDate date,
-                                              ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
-
+                                        ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
+        this.logger.info(String.format("Client Log | Request: createRoom | AdminID: %s | Room number: %d | Date: %s",
+                adminID, roomNumber, date.toString()));
         try {
-            ServerInterface server = (ServerInterface) registry.lookup(this.campusID.toString());
-            String result = server.createRoom(roomNumber, date, listOfTimeSlots);
-            //TODO: generate recordID
-            int recordID = 1;
-
-            if (result != null) {
-                logger.info("Room Successfully Created. | Record ID: " + recordID);
-            } else {
-                logger.warning("Room Creation Error: Unable to Create Room. Please consult server log.");
-            }
-
+            this.logger.info(server.createRoom(adminID, roomNumber, date, listOfTimeSlots));
         } catch (Exception e) {
             logger.warning("Client exception: " + e.toString());
             e.printStackTrace();
         }
     }
+
+    public synchronized void deleteRoom(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots)
+            throws RemoteException {
+        this.logger.info(String.format("Client Log | Request: deleteRoom | AdminID: %s | Room number: %d | Date: %s",
+                adminID, roomNumber, date.toString()));
+        this.logger.info(server.deleteRoom(adminID, roomNumber, date, listOfTimeSlots));
+    }
+
 }

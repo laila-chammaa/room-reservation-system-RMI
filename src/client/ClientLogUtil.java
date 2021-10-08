@@ -36,14 +36,14 @@ public class ClientLogUtil {
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
         } catch (SecurityException e) {
-            System.err.println("Server Log: Error: Security Exception " + e);
+            System.err.println("Clients Log: Error: Security Exception " + e);
             e.printStackTrace();
         } catch (IOException e) {
-            System.err.println("Server Log: Error: IO Exception " + e);
+            System.err.println("Clients Log: Error: IO Exception " + e);
             e.printStackTrace();
         }
 
-        System.out.println("Server Log: Logger initialization success.");
+        System.out.println("Clients Log: Logger initialization success.");
 
         return logger;
     }
