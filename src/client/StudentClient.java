@@ -59,13 +59,18 @@ public class StudentClient {
         }
     }
 
-    public synchronized void bookRoom(CampusID campusID, int roomNumber, LocalDate date,
-                                      Map.Entry<Long, Long> timeSlot)
-            throws RemoteException {
+    public synchronized String bookRoom(CampusID campusID, int roomNumber, LocalDate date,
+                                      Map.Entry<Long, Long> timeSlot) throws RemoteException {
 
-        this.logger.info(String.format("Client Log | Request: bookRoom | StudentID: %s | " +
-                "Room number: %d | Date: %s | Timeslot: %s", studentID, roomNumber, date.toString(), timeSlot.toString()));
-        this.logger.info(server.bookRoom(studentID, campusID, roomNumber, date, timeSlot));
+        this.logger.info(String.format("Client Log | Request: bookRoom | Campus: %s | StudentID: %s | " +
+                "Room number: %d | Date: %s | Timeslot: %s", campusID.toString(), studentID, roomNumber, date.toString(),
+                timeSlot.toString()));
+        String result = server.bookRoom(studentID, campusID, roomNumber, date, timeSlot);
+        this.logger.info(result);
+        if (result.contains("BookingID: ")) {
+            return result.substring(result.indexOf("ID: ") + 4);
+        }
+        return null;
     }
 
     public synchronized HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {

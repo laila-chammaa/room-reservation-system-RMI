@@ -50,6 +50,14 @@ public class Booking {
         this.bookingID = bookingID;
     }
 
+    public Map.Entry<Long, Long> getTimeslot() {
+        return timeslot;
+    }
+
+    public void setTimeslot(Map.Entry<Long, Long> timeslot) {
+        this.timeslot = timeslot;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,12 +65,13 @@ public class Booking {
         Booking booking = (Booking) o;
         return Objects.equals(recordID, booking.recordID) &&
                 Objects.equals(bookedBy, booking.bookedBy) &&
-                Objects.equals(bookingID, booking.bookingID);
+                Objects.equals(bookingID, booking.bookingID) &&
+                Objects.equals(timeslot, booking.timeslot);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recordID, bookedBy, bookingID);
+        return Objects.hash(recordID, bookedBy, bookingID, timeslot);
     }
 
     @Override
@@ -71,14 +80,7 @@ public class Booking {
                 "recordID='" + recordID + '\'' +
                 ", bookedBy='" + bookedBy + '\'' +
                 ", bookingID='" + bookingID + '\'' +
+                ", timeslot=" + timeslot +
                 '}';
-    }
-
-    public Map.Entry<Long, Long> getTimeslot() {
-        return timeslot;
-    }
-
-    public void setTimeslot(Map.Entry<Long, Long> timeslot) {
-        this.timeslot = timeslot;
     }
 }

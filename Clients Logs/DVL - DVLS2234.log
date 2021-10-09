@@ -1,0 +1,4 @@
+Oct 08, 2021 9:46:36 PM client.StudentClient cancelBooking
+INFO: Client Log | Request: cancelBooking | StudentID: DVLS2234 | BookingID: 634eb317-13a5-45b3-93ca-daa09a7067ea
+Oct 08, 2021 9:46:36 PM client.StudentClient cancelBooking
+INFO: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: 634eb317-13a5-45b3-93ca-daa09a7067ea

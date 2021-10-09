@@ -1,29 +1,30 @@
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
-Oct 08, 2021 5:27:10 PM client.StudentClient getAvailableTimeSlot
+Oct 08, 2021 9:46:36 PM client.StudentClient getAvailableTimeSlot
 INFO: Client Log | Request: getAvailableTimeSlot | Date: 2021-10-08
-Oct 08, 2021 5:27:10 PM client.StudentClient getAvailableTimeSlot
+Oct 08, 2021 9:46:36 PM client.StudentClient getAvailableTimeSlot
 WARNING: RemoteException occurred in server thread; nested exception is: 
+	java.rmi.ServerException: RemoteException occurred in server thread; nested exception is: 
 	java.rmi.RemoteException: Address already in use (Bind failed)
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient cancelBooking
-INFO: Client Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: DVLS1234
-Oct 08, 2021 5:27:10 PM client.StudentClient cancelBooking
-INFO: Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: DVLS1234
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Server Log | ERROR: Room was not found | Request: bookRoom | Room number: 201 | Date: 2021-10-08
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Client Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
-Oct 08, 2021 5:27:10 PM client.StudentClient bookRoom
-INFO: Server Log | ERROR: Time slot was not available | Request: bookRoom | Room number: 201 | Date: 2021-10-08 | Timeslot: 19=20
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | Campus: KKL | StudentID: DVLS1234 | Room number: 201 | Date: 2020-01-03 | Timeslot: 19=20
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Server Log | Room record RR00001 was booked successfully. BookingID: ced220c2-33da-4c90-b611-24c9c4ee8f9d
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | Campus: WST | StudentID: DVLS1234 | Room number: 211 | Date: 2020-01-04 | Timeslot: 19=20
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Server Log | Room record RR00002 was booked successfully. BookingID: cb1a0614-9dbd-469a-bd1c-fdf582d56c5d
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | Campus: DVL | StudentID: DVLS1234 | Room number: 203 | Date: 2020-01-01 | Timeslot: 19=20
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Server Log | Room record RR00003 was booked successfully. BookingID: 634eb317-13a5-45b3-93ca-daa09a7067ea
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | Campus: DVL | StudentID: DVLS1234 | Room number: 203 | Date: 2020-01-01 | Timeslot: 12=13
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Server Log | ERROR: Booking limit (3) for the week was reached | StudentID DVLS1234
+Oct 08, 2021 9:46:36 PM client.StudentClient cancelBooking
+INFO: Client Log | Request: cancelBooking | StudentID: DVLS1234 | BookingID: 634eb317-13a5-45b3-93ca-daa09a7067ea
+Oct 08, 2021 9:46:36 PM client.StudentClient cancelBooking
+INFO: Server Log | Booking 634eb317-13a5-45b3-93ca-daa09a7067ea was cancelled successfully.
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Client Log | Request: bookRoom | Campus: DVL | StudentID: DVLS1234 | Room number: 203 | Date: 2020-01-01 | Timeslot: 12=13
+Oct 08, 2021 9:46:36 PM client.StudentClient bookRoom
+INFO: Server Log | Room record RR00003 was booked successfully. BookingID: 4b549908-b0bc-46ff-9969-c35fafcd20bc

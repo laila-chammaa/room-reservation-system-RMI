@@ -16,6 +16,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.FileHandler;
@@ -29,12 +30,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     private static final int USER_TYPE_POS = 3;
     private static int UDPPort;
 
-    //TODO: delete?
     //Variables for RMI Registry
-    //private static final int REGISTRY_PORT = 1199;
-//    private static int REGISTRY_PORT  = 1199;
-//    private Registry registry;
-
     private static final String REGISTRY_HOST = "localhost";
     private static final int REGISTRY_PORT = 1099;
     private Registry registry = LocateRegistry.getRegistry(REGISTRY_HOST, REGISTRY_PORT);
@@ -76,7 +72,6 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         // Bind the local server to the RMI Registry
         startRegistry();
 
-        // TODO: remove this line?
         //ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, UDPPort);
         registry.bind(this.campusID.toString(), this);
     }
@@ -142,36 +137,49 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
                 .filter(h -> h.getValue().getKey().equals(date) && h.getValue().getValue() == roomNumber).findFirst();
         if (record.isPresent()) {
             String recordID = record.get().getKey();
-            List<Booking> newBookings = new ArrayList<>();
-            for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
-                newBookings.add(new Booking(recordID, null, slot));
-            }
-            bookingRecords.put(recordID, newBookings);
-            resultLog = String.format("Server Log | Room record %s was already created. " +
-                    "It was updated successfully", recordID);
-            this.logger.info(resultLog);
+            resultLog = updateRecord(recordID, listOfTimeSlots);
         } else {
-            String recordID = "RR" + String.format("%05d", recordIdCount);
-            incrementRecordID();
-            while (roomRecords.get(recordID) != null) {
-                incrementRecordID();
-                recordID = "RR" + recordIdCount;
-            }
-            roomRecords.put(recordID, new AbstractMap.SimpleEntry<>(date, roomNumber));
-            List<Booking> newBookings = new ArrayList<>();
-            for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
-                newBookings.add(new Booking(recordID, null, slot));
-            }
-            bookingRecords.put(recordID, newBookings);
-            resultLog = String.format("Server Log | Room record %s was created successfully", recordID);
-            this.logger.info(resultLog);
+            resultLog = createRecord(roomNumber, date, listOfTimeSlots);
         }
+        return resultLog;
+    }
+
+    private String createRecord(int roomNumber, LocalDate date, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
+        String resultLog;
+        String recordID = "RR" + String.format("%05d", recordIdCount);
+        incrementRecordID();
+        while (roomRecords.get(recordID) != null) {
+            incrementRecordID();
+            recordID = "RR" + recordIdCount;
+        }
+        roomRecords.put(recordID, new AbstractMap.SimpleEntry<>(date, roomNumber));
+        List<Booking> newBookings = new ArrayList<>();
+        for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
+            newBookings.add(new Booking(recordID, null, slot));
+        }
+        bookingRecords.put(recordID, newBookings);
+        resultLog = String.format("Server Log | Room record %s was created successfully", recordID);
+        this.logger.info(resultLog);
+        return resultLog;
+    }
+
+    private String updateRecord(String recordID, ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
+        String resultLog;
+        List<Booking> previousBookings = bookingRecords.get(recordID);
+        List<Booking> newBookings = new ArrayList<>(previousBookings);
+        for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
+            newBookings.add(new Booking(recordID, null, slot));
+        }
+        bookingRecords.put(recordID, newBookings);
+        resultLog = String.format("Server Log | Room record %s was already created. " +
+                "It was updated successfully", recordID);
+        this.logger.info(resultLog);
         return resultLog;
     }
 
     @Override
     public String deleteRoom(String adminID, int roomNumber, LocalDate date,
-                             ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
+                             ArrayList<Map.Entry<Long, Long>> listOfTimeSlots) {
 
         String resultLog;
         resultLog = validateAdmin(adminID);
@@ -233,7 +241,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
                 otherServer = (ServerInterface) registry.lookup(campusID.toString());
                 return otherServer.bookRoom(studentID, campusID, roomNumber, date, timeslot);
             } catch (NotBoundException e) {
-                resultLog = "Server Log | Request: deleteRoom | ERROR: " + campusID.toString() + " Not Bound.";
+                resultLog = "Server Log | Request: bookRoom | ERROR: " + campusID.toString() + " Not Bound.";
                 this.logger.severe(resultLog);
                 return resultLog;
             }
@@ -241,13 +249,13 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         this.logger.info(String.format("Server Log | Request: bookRoom | StudentID: %s | " +
                 "Room number: %d | Date: %s | Timeslot: %s", studentID, roomNumber, date.toString(), timeslot.toString()));
 
-        //TODO: null check
         if (getStuBookingCnt(studentID, date) >= MAX_NUM_BOOKING) {
             resultLog = String.format("Server Log | ERROR: Booking limit (%d) for the week was reached | " +
                     "StudentID %s", MAX_NUM_BOOKING, studentID);
             this.logger.warning(resultLog);
             return resultLog;
         }
+        //TODO: null check
         Optional<Map.Entry<String, Map.Entry<LocalDate, Integer>>> record = roomRecords.entrySet().stream()
                 .filter(h -> h.getValue().getKey().equals(date) && h.getValue().getValue() == roomNumber).findFirst();
         if (record.isPresent()) {
@@ -276,7 +284,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     }
 
     @Override
-    public String cancelBooking(String studentID, String bookingID) throws RemoteException {
+    public String cancelBooking(String studentID, String bookingID) {
 
         String resultLog;
         resultLog = validateStudent(studentID);
@@ -287,15 +295,18 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         this.logger.info(String.format("Server Log | Request: cancelBooking | StudentID: %s | " +
                 "BookingID: %s", studentID, bookingID));
         List<Booking> bookingList = bookingRecords.values().stream().flatMap(List::stream).collect(Collectors.toList());
-        Optional<Booking> booking = bookingList.stream().filter(b -> b.getBookingID().equals(bookingID)).findFirst();
-        if (booking.isPresent()) {
+        Optional<Booking> booking = bookingList.stream().filter(b -> b.getBookingID() != null &&
+                b.getBookingID().equals(bookingID)).findFirst();
+        if (booking.isPresent() && booking.get().getBookedBy().equals(studentID)) {
             booking.get().setBookedBy(null);
             booking.get().setBookingID(null);
             resultLog = String.format("Server Log | Booking %s was cancelled successfully.", bookingID);
+            LocalDate date = roomRecords.get(booking.get().getRecordID()).getKey();
+            setStuBookingCnt(studentID, date, -1);
             this.logger.info(resultLog);
         } else {
-            resultLog = String.format("Server Log | ERROR: Booking was not found | Request: cancelBooking | " +
-                    "BookingID: %s", bookingID);
+            resultLog = String.format("Server Log | ERROR: Booking was not found | Request: cancelBooking | BookingID: %s",
+                    bookingID);
             this.logger.warning(resultLog);
         }
         return resultLog;
@@ -373,7 +384,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
     }
 
     @Override
-    public int getLocalAvailableTimeSlot() throws RemoteException {
+    public int getLocalAvailableTimeSlot() {
         List<Booking> bookingList = bookingRecords.values().stream().flatMap(List::stream).collect(Collectors.toList());
         List<Booking> nullBookings = bookingList.stream().filter(b -> b.getBookedBy() == null).collect(Collectors.toList());
         return nullBookings.size();
@@ -421,6 +432,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
 
         HashMap<String, Integer> stuMap = stuBkngCntMap.get(week);
         Integer cnt = stuMap.get(studentID);
+        if (cnt == null) cnt = 0;
         if (offset > 0) {
             stuMap.put(studentID, ++cnt);
         } else {
@@ -432,7 +444,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         recordIdCount++;
     }
 
-    private String validateAdmin(String userID) throws RemoteException {
+    private String validateAdmin(String userID) {
         char userType = userID.charAt(USER_TYPE_POS);
         if (userType != 'A') {
             return "Login Error: This request is for admins only.";
@@ -440,7 +452,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         return null;
     }
 
-    private String validateStudent(String userID) throws RemoteException {
+    private String validateStudent(String userID) {
         char userType = userID.charAt(USER_TYPE_POS);
         if (userType != 'S') {
             return "Login Error: This request is for students only.";
@@ -448,7 +460,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         return null;
     }
 
-    private String validateTimeSlot(List<Map.Entry<Long, Long>> listOfTimeSlots) throws RemoteException {
+    private String validateTimeSlot(List<Map.Entry<Long, Long>> listOfTimeSlots) {
         for (Map.Entry<Long, Long> slot : listOfTimeSlots) {
             if (slot.getKey() < 0 || slot.getKey() >= 24 || slot.getValue() < 0 ||
                     slot.getValue() >= 24 || slot.getKey() >= slot.getValue()) {

@@ -16,24 +16,24 @@ public class StudentDriver {
 
     public static void main(String[] args) {
         String sid1 = "DVLS1234";
-        String sid2 = "DVLA1234";
-        String sid3 = "DVLD1234";
+        String sid2 = "DVLS2234";
+        String sid3 = "DVLA1234";
+        String sid4 = "DVLD1234";
 
         Map.Entry<Long, Long> timeSlot = new AbstractMap.SimpleEntry<>(19L, 20L);
         Map.Entry<Long, Long> timeSlot2 = new AbstractMap.SimpleEntry<>(2L, 15L);
+        Map.Entry<Long, Long> timeSlot3 = new AbstractMap.SimpleEntry<>(12L, 13L);
         Map.Entry<Long, Long> invalidTimeSlot = new AbstractMap.SimpleEntry<>(26L, 20L);
 
         try {
             StudentClient testClient1 = new StudentClient(sid1);
-            //StudentClient adminClient = new StudentClient(sid2);
-            //StudentClient invalidClient = new StudentClient(sid3);
+            StudentClient testClient2 = new StudentClient(sid2);
+            //StudentClient adminClient = new StudentClient(sid3);
+            //StudentClient invalidClient = new StudentClient(sid4);
 
-            testClient1.bookRoom(KKL, 201, LocalDate.now(), timeSlot);
             HashMap<CampusID, Integer> serverTimeSlot = testClient1.getAvailableTimeSlot(LocalDate.now());
             serverTimeSlot.forEach((key, value) -> System.out.printf("Campus: %s, Available slots: %d%n",
                     key.toString(), value));
-            testClient1.bookRoom(DVL, 201, LocalDate.now(), timeSlot);
-            testClient1.cancelBooking(sid1);
 
             //testing invalid parameters:
             //testClient1.bookRoom(KKL, 201, LocalDate.of(2020, Month.JANUARY, 3), invalidTimeSlot);
@@ -41,8 +41,14 @@ public class StudentDriver {
 
             //testing max booking for student
             testClient1.bookRoom(KKL, 201, LocalDate.of(2020, Month.JANUARY, 3), timeSlot);
-            testClient1.bookRoom(WST, 201, LocalDate.of(2020, Month.JANUARY, 4), timeSlot);
-            testClient1.bookRoom(DVL, 201, LocalDate.of(2020, Month.JANUARY, 5), timeSlot);
+            testClient1.bookRoom(WST, 211, LocalDate.of(2020, Month.JANUARY, 4), timeSlot);
+            String bookingID = testClient1.bookRoom(DVL, 203, LocalDate.of(2020, Month.JANUARY, 1), timeSlot);
+            testClient1.bookRoom(DVL, 203, LocalDate.of(2020, Month.JANUARY, 1), timeSlot3);
+            //testClient1.bookRoom(DVL, 203, LocalDate.of(2020, Month.JANUARY, 1), timeSlot3);
+
+            testClient2.cancelBooking(bookingID); //shouldn't work since it's not the student who booked
+            testClient1.cancelBooking(bookingID);
+            testClient1.bookRoom(DVL, 203, LocalDate.of(2020, Month.JANUARY, 1), timeSlot3);
 
 
         } catch (RemoteException | NotBoundException e) {
@@ -51,10 +57,3 @@ public class StudentDriver {
 
     }
 }
-
-/*
-Testing synchronization with multiple admins and users.
-Testing with incorrect/invalid parameters (dates, time slot format)
-Testing max limit of booking for a student, cancelling and trying again with different servers.
-
- */
