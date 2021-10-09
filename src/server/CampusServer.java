@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -312,7 +313,6 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
         return resultLog;
     }
 
-    //TODO: fix this
     @Override
     public HashMap<CampusID, Integer> getAvailableTimeSlot(LocalDate date) throws RemoteException {
         this.logger.info(String.format("Server Log | Request: getAvailableTimeSlot | Date: %s", date.toString()));
@@ -345,14 +345,11 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
 
                 //3. For each server we will ask for their local total count.
                 boolean recv = false;
-                int rData = 0; //TODO: might not be right
+                int rData = 0;
 
                 while (!recv) {
-                    synchronized (CampusServer.class) {
-                        //other thread safe code
+                    otherServer.getUDPData(CampusServer.UDPPort);
 
-                        otherServer.getUDPData(CampusServer.UDPPort);
-                    }
                     byte[] buffer = new byte[1024];
                     DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 
@@ -362,8 +359,11 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
                         this.logger.severe("Server Log | getAvailableTimeSlot() ERROR: IO Exception at receiving reply.");
                         throw new RemoteException(e.getMessage());
                     }
-
-                    rData = Integer.parseInt(new String(request.getData()));
+                    try {
+                        rData = Integer.parseInt(new String(request.getData()));
+                    } catch (NumberFormatException e) {
+                        rData = 0;
+                    }
 
                     if (request.getPort() > 9000) {
                         recv = true;
@@ -399,7 +399,7 @@ public class CampusServer extends UnicastRemoteObject implements ServerInterface
             byte[] message = ByteBuffer.allocate(4).putInt(getLocalAvailableTimeSlot()).array();
             InetAddress hostAddress = InetAddress.getByName("localhost");
             DatagramPacket packet = new DatagramPacket(message, message.length, hostAddress, portNum);
-            socket = new DatagramSocket(CampusServer.UDPPort);
+            socket = new DatagramSocket();
             socket.send(packet);
             socket.close();
         } catch (IOException e) {

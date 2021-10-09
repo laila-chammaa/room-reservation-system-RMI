@@ -1,20 +1,22 @@
-Oct 08, 2021 9:45:15 PM server.CampusServer initializeServer
+Oct 08, 2021 10:06:15 PM server.CampusServer initializeServer
 INFO: Initializing Server ...
-Oct 08, 2021 9:45:15 PM server.CampusServer <init>
+Oct 08, 2021 10:06:15 PM server.CampusServer <init>
 INFO: Server: WST initialization success.
-Oct 08, 2021 9:45:15 PM server.CampusServer <init>
+Oct 08, 2021 10:06:15 PM server.CampusServer <init>
 INFO: Server: WST port is : 1099
-Oct 08, 2021 9:46:30 PM server.CampusServer createRoom
+Oct 08, 2021 10:06:18 PM server.CampusServer createRoom
 INFO: Server Log | Request: createRoom | AdminID: WSTA1234 | Room number: 211 | Date: 2020-01-04
-Oct 08, 2021 9:46:30 PM server.CampusServer createRecord
+Oct 08, 2021 10:06:18 PM server.CampusServer createRecord
 INFO: Server Log | Room record RR00002 was created successfully
-Oct 08, 2021 9:46:30 PM server.CampusServer deleteRoom
+Oct 08, 2021 10:06:18 PM server.CampusServer deleteRoom
 INFO: Server Log | Request: deleteRoom | AdminID: WSTA1234 | Room number: 211 | Date: 2020-01-04
-Oct 08, 2021 9:46:30 PM server.CampusServer deleteRoom
+Oct 08, 2021 10:06:18 PM server.CampusServer deleteRoom
 INFO: Server Log | Room record RR00002 was deleted successfully
-Oct 08, 2021 9:46:36 PM server.CampusServer getUDPData
-SEVERE: Server Log: | getUDPData Error: Address already in use (Bind failed)
-Oct 08, 2021 9:46:36 PM server.CampusServer bookRoom
+Oct 08, 2021 10:06:24 PM server.CampusServer bookRoom
 INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 211 | Date: 2020-01-04 | Timeslot: 19=20
-Oct 08, 2021 9:46:36 PM server.CampusServer bookRoom
-INFO: Server Log | Room record RR00002 was booked successfully. BookingID: cb1a0614-9dbd-469a-bd1c-fdf582d56c5d
+Oct 08, 2021 10:06:24 PM server.CampusServer bookRoom
+INFO: Server Log | Room record RR00002 was booked successfully. BookingID: 1c2e263d-967c-478a-93ac-078d6efbfbca
+Oct 08, 2021 10:08:21 PM server.CampusServer bookRoom
+INFO: Server Log | Request: bookRoom | StudentID: DVLS1234 | Room number: 211 | Date: 2020-01-04 | Timeslot: 19=20
+Oct 08, 2021 10:08:21 PM server.CampusServer bookRoom
+WARNING: Server Log | ERROR: Booking limit (3) for the week was reached | StudentID DVLS1234

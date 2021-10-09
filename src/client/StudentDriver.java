@@ -31,7 +31,7 @@ public class StudentDriver {
             //StudentClient adminClient = new StudentClient(sid3);
             //StudentClient invalidClient = new StudentClient(sid4);
 
-            HashMap<CampusID, Integer> serverTimeSlot = testClient1.getAvailableTimeSlot(LocalDate.now());
+            HashMap<CampusID, Integer> serverTimeSlot = testClient1.getAvailableTimeSlot(LocalDate.of(2020, Month.JANUARY, 3));
             serverTimeSlot.forEach((key, value) -> System.out.printf("Campus: %s, Available slots: %d%n",
                     key.toString(), value));
 
